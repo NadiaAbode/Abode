@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1f2c34">
+<title></title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    font-family: -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: #0b141a;
+    color: #e9edef;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Status bar simulation */
+  .status-bar {
+    background: #1f2c34;
+    padding: 8px 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #8696a0;
+    height: 20px;
+  }
+
+  /* Header */
+  .chat-header {
+    background: #1f2c34;
+    padding: 10px 8px 10px 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .back-arrow {
+    color: #00a884;
+    font-size: 22px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+  }
+
+  .avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #2a3942;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8696a0;
+    font-size: 15px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .contact-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .contact-name {
+    color: #e9edef;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .contact-status {
+    color: #8696a0;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  .header-icons {
+    display: flex;
+    gap: 18px;
+    color: #8696a0;
+    font-size: 20px;
+    flex-shrink: 0;
+    padding-right: 4px;
+  }
+
+  /* Chat wallpaper */
+  .chat-body {
+    min-height: calc(100vh - 68px);
+    padding: 8px 12px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background-color: #0b141a;
+    background-image: 
+      radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.01) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.008) 0%, transparent 50%);
+  }
+
+  /* Date chip */
+  .date-chip {
+    align-self: center;
+    background: #182229;
+    color: #8696a0;
+    font-size: 12.5px;
+    padding: 5px 12px;
+    border-radius: 8px;
+    margin: 6px 0 8px;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.15);
+  }
+
+  /* Message bubbles */
+  .message {
+    max-width: 85%;
+    padding: 6px 8px 22px;
+    border-radius: 8px;
+    font-size: 14.5px;
+    line-height: 1.4;
+    color: #e9edef;
+    position: relative;
+    word-wrap: break-word;
+    margin-bottom: 1px;
+    align-self: flex-end;
+    background: #005c4b;
+  }
+
+  .message.tail {
+    border-top-right-radius: 0;
+    margin-bottom: 1px;
+  }
+
+  .message.tail::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -7px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 10px 8px;
+    border-color: transparent transparent transparent #005c4b;
+    transform: rotate(180deg) scaleX(-1);
+  }
+
+  .time-row {
+    position: absolute;
+    bottom: 4px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    white-space: nowrap;
+  }
+
+  .time-row .checks {
+    color: #53bdeb;
+    font-size: 16px;
+    line-height: 1;
+    letter-spacing: -4px;
+    margin-left: 1px;
+  }
+
+  /* Spacing between message groups */
+  .gap { height: 8px; }
+
+  /* Bottom input bar (fake, for realism) */
+  .input-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1f2c34;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 10;
+  }
+
+  .input-field {
+    flex: 1;
+    background: #2a3942;
+    border: none;
+    border-radius: 21px;
+    padding: 9px 16px;
+    color: #e9edef;
+    font-size: 15px;
+    outline: none;
+  }
+
+  .input-field::placeholder {
+    color: #8696a0;
+  }
+
+  .send-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #00a884;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .mic-icon, .emoji-icon, .attach-icon {
+    color: #8696a0;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="chat-header">
+  <span class="back-arrow">‹</span>
+  <div class="avatar">SL</div>
+  <div class="contact-info">
+    <div class="contact-name">Sebastian Lorne</div>
+    <div class="contact-status">en línea</div>
+  </div>
+  <div class="header-icons">
+    <span>📹</span>
+    <span>📞</span>
+    <span>⋮</span>
+  </div>
+</div>
+
+<!-- Chat -->
+<div class="chat-body">
+
+  <div class="date-chip">hoy</div>
+
+  <div class="message tail">
+    Ariel, siento haber desaparecido. Estoy bien.
+    <span class="time-row">22:47 <span class="checks">✓✓</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="message tail">
+    Oliver se quedó en el laboratorio. Estaba mareado cuando salí. Necesito que alguien lo busque y se asegure de que está bien. Aunque conociéndote seguro que ya lo has hecho.
+    <span class="time-row">22:47 <span class="checks">✓✓</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="message tail">
+    Lo que voy a contarte queda entre nosotros. Por ahora no quiero que trascienda.
+    <span class="time-row">22:48 <span class="checks">✓✓</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="message tail">
+    Encontré a alguien espiando mi discusión con Oliver. El intruso era Daniel Salgado, hijo de Luis Salgado, que formó parte del equipo de AURORA hace años.
+    <span class="time-row">22:49 <span class="checks">✓✓</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="message tail">
+    Lo he alcanzado. Hemos hablado.
+    <span class="time-row">22:49 <span class="checks">✓✓</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="message tail">
+    En resumen, no hice las cosas bien con su padre y Daniel creció sabiendo que a su padre lo habían tratado injustamente. Esta noche decidió actuar porque creyó que la presentación de Oliver iba a cerrar definitivamente esa historia sin que nadie la revisara.
+    <span class="time-row">22:51 <span class="checks">✓✓</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="message tail">
+    Aunque entiendo sus motivos lo que hizo no es aceptable. Entró en el despacho de Oliver, accedió a documentación privada y grabó una conversación sin consentimiento.
+    <span class="time-row">22:52 <span class="checks">✓✓</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="message tail">
+    Daniel ha asumido toda la responsabilidad de lo sucedido. Sin embargo, sé que tuvo ayuda interna. Cuando vuelva hablaré con los implicados y veremos qué medida tomar.
+    <span class="time-row">22:53 <span class="checks">✓✓</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="message tail">
+    Voy para allá. Cuida de Oliver. No dejes que esto salga de nosotros esta noche.
+    <span class="time-row">22:54 <span class="checks">✓✓</span></span>
+  </div>
+
+</div>
+
+<!-- Fake input bar -->
+<div class="input-bar">
+  <span class="emoji-icon">☺</span>
+  <input class="input-field" type="text" placeholder="Mensaje" readonly>
+  <span class="attach-icon">📎</span>
+  <div class="send-btn">
+    <span style="color:white;font-size:20px;">🎤</span>
+  </div>
+</div>
+
+</body>
+</html>
